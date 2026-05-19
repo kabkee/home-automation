@@ -1102,5 +1102,21 @@
         "power": false
       }
     }
+  },
+  {
+    "timestamp": 1779222100,
+    "time": "2026-05-20 05:21:40",
+    "devices": {
+      "드레스룸": {
+        "humidity": 60,
+        "temperature": 26,
+        "power": false
+      },
+      "팬트리": {
+        "humidity": 61,
+        "temperature": 26,
+        "power": false
+      }
+    }
   }
 ]
