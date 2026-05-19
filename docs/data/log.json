@@ -304,5 +304,23 @@
     "device": "팬트리",
     "humidity": 58,
     "temperature": 27
+  },
+  {
+    "timestamp": 1779198533,
+    "time": "2026-05-19 22:48:53",
+    "action": "🌙 드레스룸: Turned OFF (quiet hours 22-08)",
+    "type": "power_off",
+    "device": "드레스룸",
+    "humidity": 55,
+    "temperature": 27
+  },
+  {
+    "timestamp": 1779198533,
+    "time": "2026-05-19 22:48:53",
+    "action": "🌙 팬트리: Turned OFF (quiet hours 22-08)",
+    "type": "power_off",
+    "device": "팬트리",
+    "humidity": 51,
+    "temperature": 28
   }
 ]
