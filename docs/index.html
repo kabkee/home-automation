@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏠 Home Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0b0b12;
+      --surface: #12121c;
+      --surface2: #1a1a2e;
+      --surface3: #222240;
+      --border: #2a2a44;
+      --text: #e4e4f0;
+      --text2: #8888b0;
+      --text3: #5a5a7a;
+      --accent: #6c5ce7;
+      --accent2: #a29bfe;
+      --green: #00d2a0;
+      --red: #ff6b6b;
+      --orange: #ffa94d;
+      --blue: #74b9ff;
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 20px; }
+
+    /* Header */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header h1 {
+      font-size: 20px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header-right {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; color: var(--text2);
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--text3); transition: background 0.3s;
+    }
+    .live-dot.on { background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+    /* Time Bar */
+    .time-bar {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px; font-size: 13px;
+    }
+    .time-bar .icon { font-size: 16px; }
+    .time-bar .value { font-weight: 600; }
+    .time-bar .badge {
+      margin-left: auto; padding: 3px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+    .badge.active { background: rgba(0,210,160,0.12); color: var(--green); }
+    .badge.quiet { background: rgba(255,107,107,0.12); color: var(--red); }
+
+    /* Section */
+    .section-title {
+      font-size: 14px; font-weight: 700; margin-bottom: 12px;
+      color: var(--text2); letter-spacing: 0.5px;
+    }
+
+    /* Device Cards */
+    .device-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px;
+      transition: border-color 0.3s;
+    }
+    .card.on { border-color: rgba(0,210,160,0.25); }
+    .card.off { border-color: rgba(255,107,107,0.12); }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .card-name { font-size: 15px; font-weight: 700; }
+    .power-badge {
+      padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    }
+    .power-badge.on { background: rgba(0,210,160,0.12); color: var(--green); }
+    .power-badge.off { background: rgba(255,107,107,0.12); color: var(--red); }
+    .card-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .stat {
+      background: var(--surface2); border-radius: 10px;
+      padding: 10px 12px; text-align: center;
+    }
+    .stat-label {
+      font-size: 10px; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px;
+    }
+    .stat-value {
+      font-size: 20px; font-weight: 800; line-height: 1.2;
+    }
+    .stat-value.high { color: var(--red); }
+    .stat-value.ok { color: var(--green); }
+    .stat-value.mid { color: var(--orange); }
+    .stat-value.temp { color: var(--blue); }
+    .stat-unit { font-size: 11px; color: var(--text2); font-weight: 400; }
+
+    /* Chart Section */
+    .chart-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; margin-bottom: 28px;
+    }
+    .chart-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+    }
+    .chart-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chart-controls button {
+      padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text2);
+      cursor: pointer; font-size: 11px; font-weight: 600;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .chart-controls button:hover { background: var(--surface3); color: var(--text); }
+    .chart-controls button.active {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .chart-wrap { position: relative; width: 100%; height: 260px; }
+
+    /* Filters */
+    .filter-bar {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .filter-bar label {
+      font-size: 11px; color: var(--text3); white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .filter-bar input, .filter-bar select {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); padding: 5px 10px;
+      font-size: 12px; font-family: inherit; outline: none;
+    }
+    .filter-bar input:focus, .filter-bar select:focus {
+      border-color: var(--accent);
+    }
+    .filter-bar input[type="date"] { color-scheme: dark; }
+    .filter-bar input[type="number"] { width: 60px; }
+    .filter-clear {
+      padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--text2); cursor: pointer;
+      font-size: 11px; font-family: inherit; margin-left: auto;
+    }
+    .filter-clear:hover { color: var(--red); border-color: var(--red); }
+
+    /* Log */
+    .log-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; margin-bottom: 28px;
+    }
+    .log-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+    }
+    .log-header h2 { font-size: 15px; font-weight: 700; }
+    .log-meta { font-size: 11px; color: var(--text3); }
+    .log-table { width: 100%; border-collapse: collapse; }
+    .log-table th {
+      text-align: left; font-size: 10px; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 6px 10px; border-bottom: 1px solid var(--border);
+    }
+    .log-table td {
+      padding: 7px 10px; font-size: 12px; border-bottom: 1px solid rgba(42,42,68,0.4);
+      vertical-align: top;
+    }
+    .log-table tr:hover td { background: rgba(108,92,231,0.04); }
+    .log-table .time-cell { color: var(--text3); white-space: nowrap; font-size: 11px; }
+    .log-table .action-cell { color: var(--text); }
+    .log-table .device-cell { white-space: nowrap; }
+    .device-tag {
+      display: inline-block; padding: 1px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600;
+    }
+    .device-tag.드레스룸 { background: rgba(116,185,255,0.12); color: var(--blue); }
+    .device-tag.팬트리 { background: rgba(255,169,77,0.12); color: var(--orange); }
+    .device-tag.all { background: rgba(108,92,231,0.12); color: var(--accent2); }
+    .log-empty {
+      text-align: center; color: var(--text3); padding: 30px; font-size: 13px;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center; padding: 80px 20px; color: var(--text3);
+    }
+    .loading .spinner { animation: spin 1.5s infinite; font-size: 36px; margin-bottom: 14px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Footer */
+    .footer {
+      text-align: center; padding: 20px; font-size: 11px; color: var(--text3);
+    }
+    .footer a { color: var(--text3); text-decoration: none; }
+    .footer a:hover { color: var(--accent2); }
+
+    @media (max-width: 640px) {
+      .container { padding: 12px; }
+      .device-grid { grid-template-columns: 1fr; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-bar label { width: 100%; }
+      .filter-clear { margin-left: 0; }
+      .chart-wrap { height: 200px; }
+      .log-table { font-size: 11px; }
+      .log-table th, .log-table td { padding: 5px 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <div class="loading" id="loading">
+      <div class="spinner">🌀</div>
+      <div>Loading dashboard...</div>
+    </div>
+  </div>
+
+  <script>
+  const REFRESH_MS = 30000;
+  let historyData = [];
+  let logData = [];
+  let chart = null;
+  let chartRange = '24h';
+
+  async function jsonOrNull(url) {
+    try {
+      const r = await fetch(url + '?t=' + Date.now());
+      if (!r.ok) return null;
+      return r.json();
+    } catch { return null; }
+  }
+
+  function kstNow() {
+    return new Date().toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false });
+  }
+
+  function kstDate(d) {
+    return d.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false });
+  }
+
+  function parseLogTime(s) {
+    // "2026-05-19 10:13:14"
+    const [d, t] = s.split(' ');
+    return new Date(d + 'T' + t + '+09:00');
+  }
+
+  function getHumidityClass(v) {
+    if (v == null) return '';
+    if (v > 60) return 'high';
+    if (v > 50) return 'mid';
+    return 'ok';
+  }
+
+  // ===== CHART =====
+  function buildChart(history, range) {
+    if (!history || history.length === 0) return;
+    const now = Date.now();
+    const ranges = { '1h': 3600000, '6h': 21600000, '12h': 43200000, '24h': 86400000, '7d': 604800000 };
+    const cutoff = now - (ranges[range] || 86400000);
+
+    const filtered = history.filter(p => p.timestamp * 1000 >= cutoff);
+    if (filtered.length < 2) return;
+
+    const labels = filtered.map(p => {
+      const d = new Date(p.timestamp * 1000);
+      const h = d.getHours().toString().padStart(2,'0');
+      const m = d.getMinutes().toString().padStart(2,'0');
+      return h + ':' + m;
+    });
+
+    const datasets = [];
+    const colors = { '드레스룸': '#74b9ff', '팬트리': '#ffa94d' };
+    const names = Object.keys(filtered[0].devices);
+    
+    names.forEach(name => {
+      const data = filtered.map(p => p.devices[name]?.humidity ?? null);
+      datasets.push({
+        label: name + ' humidity',
+        data,
+        borderColor: colors[name] || '#6c5ce7',
+        backgroundColor: colors[name] + '20' || '#6c5ce720',
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHitRadius: 6,
+        tension: 0.3,
+        spanGaps: true,
+      });
+    });
+
+    if (chart) { chart.destroy(); }
+    const ctx = document.getElementById('humidityChart').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: { color: '#8888b0', font: { size: 11, family: 'Inter' }, boxWidth: 14, padding: 14 }
+          },
+          tooltip: {
+            backgroundColor: '#1a1a2e',
+            borderColor: '#2a2a44',
+            borderWidth: 1,
+            titleColor: '#e4e4f0',
+            bodyColor: '#8888b0',
+            bodyFont: { size: 12 },
+            callbacks: {
+              label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '%'
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#5a5a7a', font: { size: 10, family: 'Inter' }, maxTicksLimit: 10 },
+            grid: { color: 'rgba(42,42,68,0.3)' },
+          },
+          y: {
+            min: 30, max: 80,
+            ticks: { color: '#5a5a7a', font: { size: 10, family: 'Inter' }, callback: v => v + '%' },
+            grid: { color: 'rgba(42,42,68,0.3)' },
+          }
+        }
+      }
+    });
+  }
+
+  // ===== FILTER + RENDER LOG =====
+  function renderLog(entries, filters) {
+    let filtered = [...entries];
+    const filter = filters || getCurrentFilters();
+
+    if (filter.device && filter.device !== 'all') {
+      filtered = filtered.filter(e => e.device === filter.device);
+    }
+    if (filter.type && filter.type !== 'all') {
+      filtered = filtered.filter(e => e.type === filter.type);
+    }
+    if (filter.dateFrom) {
+      const from = new Date(filter.dateFrom + 'T00:00:00+09:00');
+      filtered = filtered.filter(e => parseLogTime(e.time) >= from);
+    }
+    if (filter.dateTo) {
+      const to = new Date(filter.dateTo + 'T23:59:59+09:00');
+      filtered = filtered.filter(e => parseLogTime(e.time) <= to);
+    }
+    if (filter.humidityMin !== '') {
+      const min = parseFloat(filter.humidityMin);
+      filtered = filtered.filter(e => e.humidity === null || e.humidity >= min);
+    }
+    if (filter.humidityMax !== '') {
+      const max = parseFloat(filter.humidityMax);
+      filtered = filtered.filter(e => e.humidity === null || e.humidity <= max);
+    }
+    if (filter.search) {
+      const q = filter.search.toLowerCase();
+      filtered = filtered.filter(e => e.action.toLowerCase().includes(q));
+    }
+
+    filtered.reverse();  // newest first
+
+    let html = `<table class="log-table">
+      <thead><tr>
+        <th style="width:100px">Time</th>
+        <th style="width:60px">Device</th>
+        <th>Action</th>
+      </tr></thead><tbody>`;
+
+    if (filtered.length === 0) {
+      html += `<tr><td colspan="3"><div class="log-empty">No matching entries 📭</div></td></tr>`;
+    } else {
+      filtered.slice(0, 200).forEach(e => {
+        const tagClass = e.device === 'all' ? 'all' : e.device;
+        html += `<tr>
+          <td class="time-cell">${e.time ? e.time.slice(5,16) : '--'}</td>
+          <td class="device-cell"><span class="device-tag ${tagClass}">${e.device || '--'}</span></td>
+          <td class="action-cell">${e.action}</td>
+        </tr>`;
+      });
+    }
+
+    html += `</tbody></table>`;
+    if (filtered.length > 200) {
+      html += `<div style="text-align:center;padding-top:8px;font-size:11px;color:var(--text3)">
+        Showing 200 of ${filtered.length} results — refine filters to narrow down
+      </div>`;
+    }
+
+    document.getElementById('logBody').innerHTML = html;
+    document.getElementById('logCount').textContent = filtered.length;
+  }
+
+  function getCurrentFilters() {
+    return {
+      device: document.getElementById('fDevice')?.value || 'all',
+      type: document.getElementById('fType')?.value || 'all',
+      dateFrom: document.getElementById('fDateFrom')?.value || '',
+      dateTo: document.getElementById('fDateTo')?.value || '',
+      humidityMin: document.getElementById('fHumMin')?.value || '',
+      humidityMax: document.getElementById('fHumMax')?.value || '',
+      search: document.getElementById('fSearch')?.value || '',
+    };
+  }
+
+  // ===== MAIN RENDER =====
+  async function refresh() {
+    const [status, log, history] = await Promise.all([
+      jsonOrNull('data/status.json'),
+      jsonOrNull('data/log.json'),
+      jsonOrNull('data/history.json'),
+    ]);
+
+    if (!status) {
+      document.getElementById('app').innerHTML = `
+        <div class="header"><h1>🏠 Home Automation</h1></div>
+        <div class="loading"><div class="spinner">😿</div><div>Waiting for data...<br><small>First automation run will populate the dashboard</small></div></div>
+      `;
+      return;
+    }
+
+    logData = log || [];
+    historyData = history || [];
+
+    const liveClass = status.last_updated ? 'on' : '';
+
+    // --- Time bar ---
+    const quiet = status.quiet_hours;
+    let timeBar = `
+      <div class="time-bar">
+        <span class="icon">🕐</span>
+        <span class="value">${kstNow()}</span>
+        <span class="badge ${quiet?'quiet':'active'}">
+          ${quiet ? '🌙 Quiet (22-08)' : '☀️ Active (08-22)'}
+        </span>
+      </div>`;
+
+    // --- Device cards ---
+    let cards = '';
+    if (status.devices) {
+      for (const [name, dev] of Object.entries(status.devices)) {
+        const isOn = dev.power;
+        const hClass = getHumidityClass(dev.humidity);
+        cards += `
+          <div class="card ${isOn?'on':'off'}">
+            <div class="card-header">
+              <span class="card-name">${name}</span>
+              <span class="power-badge ${isOn?'on':'off'}">${isOn?'● ON':'○ OFF'}</span>
+            </div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="stat-label">Humidity</div>
+                <div class="stat-value ${hClass}">${dev.humidity??'--'}<span class="stat-unit">%</span></div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Temperature</div>
+                <div class="stat-value temp">${dev.temperature??'--'}<span class="stat-unit">°C</span></div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Mode</div>
+                <div class="stat-value" style="font-size:13px;font-weight:600">${dev.mode||'--'}</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Target</div>
+                <div class="stat-value" style="color:var(--accent)">${dev.target_humidity??'--'}<span class="stat-unit">%</span></div>
+              </div>
+            </div>
+          </div>`;
+      }
+    }
+
+    // --- Chart ---
+    buildChart(historyData, chartRange);
+
+    // --- Filters ---
+    // Auto-fill date inputs
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0,10);
+    const weekAgo = new Date(today.getTime() - 7*86400000).toISOString().slice(0,10);
+
+    const filters = `
+      <div class="filter-bar">
+        <label>🔍 <input type="text" id="fSearch" placeholder="Search actions..." style="width:120px" oninput="applyFilters()"></label>
+        <label>Device <select id="fDevice" onchange="applyFilters()">
+          <option value="all">All</option>
+          ${status.devices ? Object.keys(status.devices).map(n => `<option value="${n}">${n}</option>`).join('') : ''}
+          <option value="all">System</option>
+        </select></label>
+        <label>Type <select id="fType" onchange="applyFilters()">
+          <option value="all">All</option>
+          <option value="power_on">Power ON</option>
+          <option value="power_off">Power OFF</option>
+          <option value="mode_change">Mode Change</option>
+          <option value="target_change">Target Change</option>
+          <option value="system">System</option>
+        </select></label>
+        <label>📅 From <input type="date" id="fDateFrom" value="${weekAgo}" onchange="applyFilters()"></label>
+        <label>To <input type="date" id="fDateTo" value="${todayStr}" onchange="applyFilters()"></label>
+        <label>💧 <input type="number" id="fHumMin" placeholder="Min" min="0" max="100" oninput="applyFilters()" style="width:52px"> ~ <input type="number" id="fHumMax" placeholder="Max" min="0" max="100" oninput="applyFilters()" style="width:52px"> %</label>
+        <button class="filter-clear" onclick="clearFilters()">✕ Clear</button>
+      </div>`;
+
+    // --- Build page ---
+    document.getElementById('app').innerHTML = `
+      <div class="header">
+        <h1>🏠 Home Automation</h1>
+        <div class="header-right">
+          <span class="live-dot ${liveClass}"></span>
+          <span>${status.last_updated ? 'Last: ' + status.last_updated.slice(5,16) : '--'}</span>
+        </div>
+      </div>
+      ${timeBar}
+      <div class="section-title">📡 Devices</div>
+      <div class="device-grid">${cards}</div>
+
+      <div class="chart-section">
+        <div class="chart-header">
+          <div class="section-title" style="margin:0">📈 Humidity History</div>
+          <div class="chart-controls">
+            <button class="${chartRange==='1h'?'active':''}" onclick="setRange('1h')">1H</button>
+            <button class="${chartRange==='6h'?'active':''}" onclick="setRange('6h')">6H</button>
+            <button class="${chartRange==='12h'?'active':''}" onclick="setRange('12h')">12H</button>
+            <button class="${chartRange==='24h'?'active':''}" onclick="setRange('24h')">24H</button>
+            <button class="${chartRange==='7d'?'active':''}" onclick="setRange('7d')">7D</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="humidityChart"></canvas></div>
+      </div>
+
+      <div class="log-section">
+        <div class="log-header">
+          <h2>📋 Activity Log</h2>
+          <span class="log-meta"><span id="logCount">0</span> entries</span>
+        </div>
+        ${filters}
+        <div id="logBody"><div class="log-empty">Loading...</div></div>
+      </div>
+
+      <div class="footer">
+        <a href="https://github.com/kabkee/home-automation" target="_blank">kabkee/home-automation</a>
+      </div>
+    `;
+
+    applyFilters();
+    document.getElementById('loading')?.remove();
+  }
+
+  function applyFilters() {
+    renderLog(logData);
+  }
+
+  function clearFilters() {
+    ['fSearch','fHumMin','fHumMax'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const fDevice = document.getElementById('fDevice');
+    if (fDevice) fDevice.value = 'all';
+    const fType = document.getElementById('fType');
+    if (fType) fType.value = 'all';
+    applyFilters();
+  }
+
+  function setRange(r) {
+    chartRange = r;
+    buildChart(historyData, r);
+    document.querySelectorAll('.chart-controls button').forEach(b => {
+      b.classList.toggle('active', b.textContent.trim() === r.replace('h','H').replace('d','D'));
+    });
+  }
+
+  // Initial load
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+  </script>
+</body>
+</html>
