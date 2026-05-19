@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📋 Roro Command History</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0b0b12;
+      --surface: #12121c;
+      --surface2: #1a1a2e;
+      --surface3: #222240;
+      --border: #2a2a44;
+      --text: #e4e4f0;
+      --text2: #8888b0;
+      --text3: #5a5a7a;
+      --accent: #6c5ce7;
+      --accent2: #a29bfe;
+      --green: #00d2a0;
+      --red: #ff6b6b;
+      --orange: #ffa94d;
+      --blue: #74b9ff;
+      --pink: #fd79a8;
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+    /* Header */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px;
+    }
+    .header-left {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .header h1 {
+      font-size: 20px; font-weight: 800;
+      background: linear-gradient(135deg, var(--pink), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header-right {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; color: var(--text2);
+    }
+    .back-link {
+      padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
+      color: var(--text2); text-decoration: none; font-size: 12px; font-weight: 600;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .back-link:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--text3); transition: background 0.3s;
+    }
+    .live-dot.on { background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 16px; flex: 1; min-width: 120px;
+    }
+    .stat-card .label {
+      font-size: 10px; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px;
+    }
+    .stat-card .value {
+      font-size: 22px; font-weight: 800;
+    }
+    .stat-card .value.smartthings { color: var(--blue); }
+    .stat-card .value.xiaomi { color: var(--green); }
+    .stat-card .value.user { color: var(--accent2); }
+
+    /* Filters */
+    .filter-bar {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .filter-bar label {
+      font-size: 11px; color: var(--text3); white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .filter-bar select, .filter-bar input {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); padding: 5px 10px;
+      font-size: 12px; font-family: inherit; outline: none;
+    }
+    .filter-bar select:focus, .filter-bar input:focus {
+      border-color: var(--accent);
+    }
+    .filter-bar input[type="date"] { color-scheme: dark; }
+    .filter-bar input[type="text"] { width: 140px; }
+    .filter-clear {
+      padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--text2); cursor: pointer;
+      font-size: 11px; font-family: inherit; margin-left: auto;
+    }
+    .filter-clear:hover { color: var(--red); border-color: var(--red); }
+    .filter-count {
+      margin-left: auto; font-size: 11px; color: var(--text3);
+    }
+
+    /* Table */
+    .table-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; margin-bottom: 28px;
+    }
+    .table-inner { overflow-x: auto; }
+    .cmd-table { width: 100%; border-collapse: collapse; min-width: 650px; }
+    .cmd-table th {
+      text-align: left; font-size: 10px; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 10px 12px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); white-space: nowrap;
+    }
+    .cmd-table td {
+      padding: 9px 12px; font-size: 12px; border-bottom: 1px solid rgba(42,42,68,0.3);
+      vertical-align: middle;
+    }
+    .cmd-table tr:hover td { background: rgba(108,92,231,0.04); }
+
+    .time-cell { color: var(--text3); white-space: nowrap; font-size: 11px; }
+    .device-cell { white-space: nowrap; font-weight: 600; }
+    .action-cell { font-weight: 500; }
+    .detail-cell { color: var(--text2); font-size: 11px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Tags */
+    .tag {
+      display: inline-block; padding: 2px 10px; border-radius: 12px;
+      font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+    .tag.smartthings { background: rgba(116,185,255,0.12); color: var(--blue); }
+    .tag.xiaomi { background: rgba(0,210,160,0.12); color: var(--green); }
+    .tag.system { background: rgba(90,90,122,0.2); color: var(--text3); }
+    .tag.paperclip { background: rgba(253,121,168,0.12); color: var(--pink); }
+
+    .source-tag {
+      display: inline-block; padding: 2px 9px; border-radius: 10px;
+      font-size: 10px; font-weight: 600;
+    }
+    .source-tag.user { background: rgba(162,155,254,0.12); color: var(--accent2); }
+    .source-tag.automation { background: rgba(255,169,77,0.12); color: var(--orange); }
+    .source-tag.system { background: rgba(90,90,122,0.2); color: var(--text3); }
+
+    .result-badge {
+      display: inline-block; padding: 2px 9px; border-radius: 10px;
+      font-size: 10px; font-weight: 700;
+    }
+    .result-badge.success { background: rgba(0,210,160,0.12); color: var(--green); }
+    .result-badge.failed { background: rgba(255,107,107,0.12); color: var(--red); }
+    .result-badge.pending { background: rgba(255,169,77,0.12); color: var(--orange); }
+
+    .empty {
+      text-align: center; color: var(--text3); padding: 40px 20px; font-size: 13px;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center; padding: 80px 20px; color: var(--text3);
+    }
+    .loading .spinner { animation: spin 1.5s infinite; font-size: 36px; margin-bottom: 14px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Footer */
+    .footer {
+      text-align: center; padding: 20px; font-size: 11px; color: var(--text3);
+    }
+    .footer a { color: var(--text3); text-decoration: none; }
+    .footer a:hover { color: var(--accent2); }
+
+    @media (max-width: 640px) {
+      .container { padding: 12px; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-bar label { width: 100%; }
+      .filter-bar input[type="text"] { width: auto; }
+      .filter-clear { margin-left: 0; }
+      .cmd-table { font-size: 11px; min-width: auto; }
+      .cmd-table th, .cmd-table td { padding: 6px 8px; }
+      .detail-cell { max-width: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <div class="loading" id="loading">
+      <div class="spinner">🐱</div>
+      <div>Loading Roro's command history...</div>
+    </div>
+  </div>
+
+  <script>
+  const REFRESH_MS = 30000;
+  let allCommands = [];
+
+  async function jsonOrNull(url) {
+    try {
+      const r = await fetch(url + '?t=' + Date.now());
+      if (!r.ok) return null;
+      return r.json();
+    } catch { return null; }
+  }
+
+  function kstNow() {
+    return new Date().toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false });
+  }
+
+  function parseTime(s) {
+    const [d, t] = s.split(' ');
+    return new Date(d + 'T' + t + '+09:00');
+  }
+
+  function getFilters() {
+    return {
+      platform: document.getElementById('fPlatform')?.value || 'all',
+      source: document.getElementById('fSource')?.value || 'all',
+      result: document.getElementById('fResult')?.value || 'all',
+      device: document.getElementById('fDevice')?.value?.toLowerCase() || '',
+      search: document.getElementById('fSearch')?.value?.toLowerCase() || '',
+      dateFrom: document.getElementById('fDateFrom')?.value || '',
+      dateTo: document.getElementById('fDateTo')?.value || '',
+    };
+  }
+
+  function render(commands) {
+    const filters = getFilters();
+    let filtered = [...commands];
+
+    if (filters.platform !== 'all') {
+      filtered = filtered.filter(e => e.platform === filters.platform);
+    }
+    if (filters.source !== 'all') {
+      filtered = filtered.filter(e => e.source === filters.source);
+    }
+    if (filters.result !== 'all') {
+      filtered = filtered.filter(e => e.result === filters.result);
+    }
+    if (filters.device) {
+      filtered = filtered.filter(e => e.device.toLowerCase().includes(filters.device));
+    }
+    if (filters.search) {
+      filtered = filtered.filter(e =>
+        (e.action + ' ' + e.detail + ' ' + e.device).toLowerCase().includes(filters.search)
+      );
+    }
+    if (filters.dateFrom) {
+      const from = new Date(filters.dateFrom + 'T00:00:00+09:00');
+      filtered = filtered.filter(e => parseTime(e.time) >= from);
+    }
+    if (filters.dateTo) {
+      const to = new Date(filters.dateTo + 'T23:59:59+09:00');
+      filtered = filtered.filter(e => parseTime(e.time) <= to);
+    }
+
+    // Reverse: newest first
+    filtered = [...filtered].reverse();
+
+    // Stats
+    const total = filtered.length;
+    const smartthings = filtered.filter(e => e.platform === 'smartthings').length;
+    const xiaomi = filtered.filter(e => e.platform === 'xiaomi').length;
+    const userReqs = filtered.filter(e => e.source === 'user').length;
+    const autoActions = filtered.filter(e => e.source === 'automation').length;
+
+    document.getElementById('statsTotal').textContent = total;
+    document.getElementById('statsST').textContent = smartthings;
+    document.getElementById('statsXiaomi').textContent = xiaomi;
+    document.getElementById('statsUser').textContent = userReqs;
+    document.getElementById('statsAuto').textContent = autoActions;
+
+    document.getElementById('filterCount').textContent = total;
+
+    let html = `<table class="cmd-table"><thead><tr>
+      <th style="width:80px">Time</th>
+      <th style="width:70px">Platform</th>
+      <th style="width:60px">Source</th>
+      <th style="width:120px">Device</th>
+      <th>Action</th>
+      <th style="width:100px">Result</th>
+    </tr></thead><tbody>`;
+
+    if (filtered.length === 0) {
+      html += `<tr><td colspan="6"><div class="empty">No matching commands 📭</div></td></tr>`;
+    } else {
+      filtered.slice(0, 200).forEach(e => {
+        const platTag = `<span class="tag ${e.platform}">${e.platform}</span>`;
+        const srcTag = `<span class="source-tag ${e.source}">${e.source === 'user' ? '💬 요청' : e.source === 'automation' ? '🤖 자동' : '⚙️ 시스템'}</span>`;
+        const resBadge = `<span class="result-badge ${e.result}">${e.result === 'success' ? '✅ 성공' : e.result === 'failed' ? '❌ 실패' : '⏳ 진행중'}</span>`;
+        const detailHtml = e.detail ? `<br><span style="color:var(--text3);font-size:10px">${e.detail}</span>` : '';
+        html += `<tr>
+          <td class="time-cell">${e.time ? e.time.slice(5, 16) : '--'}</td>
+          <td>${platTag}</td>
+          <td>${srcTag}</td>
+          <td class="device-cell">${e.device || '--'}</td>
+          <td class="action-cell">${e.action}${detailHtml}</td>
+          <td>${resBadge}</td>
+        </tr>`;
+      });
+    }
+
+    html += `</tbody></table>`;
+    if (filtered.length > 200) {
+      html += `<div style="text-align:center;padding:10px;font-size:11px;color:var(--text3)">
+        Showing 200 of ${filtered.length} results — refine filters
+      </div>`;
+    }
+
+    document.getElementById('tableBody').innerHTML = html;
+  }
+
+  function applyFilters() {
+    render(allCommands);
+  }
+
+  function clearFilters() {
+    ['fSearch', 'fDevice'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    ['fPlatform', 'fSource', 'fResult'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = 'all';
+    });
+    applyFilters();
+  }
+
+  async function refresh() {
+    const commands = await jsonOrNull('data/commands.json');
+    if (!commands) {
+      document.getElementById('loading').innerHTML =
+        `<div class="spinner">😿</div><div>No commands yet...<br><small>First command will appear here</small></div>`;
+      return;
+    }
+
+    allCommands = commands;
+
+    const now = kstNow();
+
+    // Build the HTML
+    document.getElementById('app').innerHTML = `
+      <div class="header">
+        <div class="header-left">
+          <h1>📋 Roro Command History</h1>
+        </div>
+        <div class="header-right">
+          <span class="live-dot on"></span>
+          <span>${now}</span>
+          <a href="index.html" class="back-link">🏠 Dashboard</a>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="label">Total Commands</div>
+          <div class="value" id="statsTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">SmartThings</div>
+          <div class="value smartthings" id="statsST">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Xiaomi</div>
+          <div class="value xiaomi" id="statsXiaomi">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">💬 User Requests</div>
+          <div class="value user" id="statsUser">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">🤖 Auto Actions</div>
+          <div class="value" style="color:var(--orange)" id="statsAuto">0</div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <label>🔍 <input type="text" id="fSearch" placeholder="Search..." oninput="applyFilters()"></label>
+        <label>Platform <select id="fPlatform" onchange="applyFilters()">
+          <option value="all">All</option>
+          <option value="smartthings">SmartThings</option>
+          <option value="xiaomi">Xiaomi</option>
+          <option value="system">System</option>
+          <option value="paperclip">Paperclip</option>
+        </select></label>
+        <label>Source <select id="fSource" onchange="applyFilters()">
+          <option value="all">All</option>
+          <option value="user">💬 User</option>
+          <option value="automation">🤖 Auto</option>
+          <option value="system">⚙️ System</option>
+        </select></label>
+        <label>Result <select id="fResult" onchange="applyFilters()">
+          <option value="all">All</option>
+          <option value="success">✅ Success</option>
+          <option value="failed">❌ Failed</option>
+          <option value="pending">⏳ Pending</option>
+        </select></label>
+        <label>Device <input type="text" id="fDevice" placeholder="Device name..." style="width:100px" oninput="applyFilters()"></label>
+        <label>📅 From <input type="date" id="fDateFrom" onchange="applyFilters()"></label>
+        <label>To <input type="date" id="fDateTo" onchange="applyFilters()"></label>
+        <button class="filter-clear" onclick="clearFilters()">✕ Clear</button>
+        <span class="filter-count" id="filterCount">0</span>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-inner" id="tableBody">
+          <div class="empty">Loading...</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <a href="https://github.com/kabkee/home-automation" target="_blank">kabkee/home-automation</a>
+      </div>
+    `;
+
+    applyFilters();
+    document.getElementById('loading')?.remove();
+  }
+
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+  </script>
+</body>
+</html>
