@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-05-19 23:04:00",
-  "timestamp": 1779199440,
+  "last_updated": "2026-05-19 23:19:06",
+  "timestamp": 1779200346,
   "quiet_hours": true,
   "current_hour": 23,
   "devices": {
@@ -16,7 +16,7 @@
     "팬트리": {
       "did": "922790368",
       "power": false,
-      "humidity": 59,
+      "humidity": 58,
       "temperature": 27,
       "mode": "Auto",
       "target_humidity": 50,
