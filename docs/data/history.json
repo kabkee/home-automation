@@ -3,8 +3,32 @@
     "timestamp": 1779153194,
     "time": "2026-05-19 10:13:14",
     "devices": {
-      "드레스룸": {"humidity": 57, "temperature": 26, "power": true},
-      "팬트리": {"humidity": 60, "temperature": 25, "power": true}
+      "드레스룸": {
+        "humidity": 57,
+        "temperature": 26,
+        "power": true
+      },
+      "팬트리": {
+        "humidity": 60,
+        "temperature": 25,
+        "power": true
+      }
+    }
+  },
+  {
+    "timestamp": 1779157770,
+    "time": "2026-05-19 11:29:30",
+    "devices": {
+      "드레스룸": {
+        "humidity": 60,
+        "temperature": 26,
+        "power": true
+      },
+      "팬트리": {
+        "humidity": 50,
+        "temperature": 26,
+        "power": false
+      }
     }
   }
 ]

@@ -7,5 +7,23 @@
     "device": "all",
     "humidity": null,
     "temperature": null
+  },
+  {
+    "timestamp": 1779157770,
+    "time": "2026-05-19 11:29:30",
+    "action": "💧 드레스룸: Turned ON (60%, target ≤50%)",
+    "type": "power_on",
+    "device": "드레스룸",
+    "humidity": 60,
+    "temperature": 26
+  },
+  {
+    "timestamp": 1779157770,
+    "time": "2026-05-19 11:29:30",
+    "action": "✅ 팬트리: Turned OFF (50% ≤ 50%)",
+    "type": "power_off",
+    "device": "팬트리",
+    "humidity": 50,
+    "temperature": 26
   }
 ]
