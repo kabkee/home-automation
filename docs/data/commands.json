@@ -1,0 +1,32 @@
+[
+  {
+    "timestamp": 1779203985,
+    "time": "2026-05-20 00:19:45",
+    "source": "user",
+    "platform": "smartthings",
+    "device": "티비 등",
+    "action": "Turned OFF",
+    "detail": "거실 TV 등 꺼줘",
+    "result": "success"
+  },
+  {
+    "timestamp": 1779204047,
+    "time": "2026-05-20 00:20:47",
+    "source": "system",
+    "platform": "system",
+    "device": "SmartThings",
+    "action": "API 토큰 설정 및 연결 완료",
+    "detail": "SmartThings Personal Access Token 등록, 36개 기기 발견",
+    "result": "success"
+  },
+  {
+    "timestamp": 1779204047,
+    "time": "2026-05-20 00:20:47",
+    "source": "user",
+    "platform": "smartthings",
+    "device": "티비 등",
+    "action": "Turned OFF",
+    "detail": "거실 TV 등 꺼줘 → 명령 ACCEPTED",
+    "result": "success"
+  }
+]
