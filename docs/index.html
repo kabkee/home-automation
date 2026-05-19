@@ -488,9 +488,6 @@
       }
     }
 
-    // --- Chart ---
-    buildChart(historyData, chartRange);
-
     // --- Filters ---
     // Auto-fill date inputs
     const today = new Date();
@@ -561,6 +558,7 @@
     `;
 
     applyFilters();
+    buildChart(historyData, chartRange);
     document.getElementById('loading')?.remove();
   }
 
