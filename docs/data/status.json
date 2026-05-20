@@ -1,13 +1,13 @@
 {
-  "last_updated": "2026-05-21 07:00:50",
-  "timestamp": 1779314450,
+  "last_updated": "2026-05-21 07:16:03",
+  "timestamp": 1779315363,
   "quiet_hours": true,
   "current_hour": 7,
   "devices": {
     "드레스룸": {
       "did": "741954293",
       "power": false,
-      "humidity": 62,
+      "humidity": 61,
       "temperature": 26,
       "mode": "Auto",
       "target_humidity": 50,
