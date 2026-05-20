@@ -448,5 +448,23 @@
     "device": "팬트리",
     "humidity": 47,
     "temperature": 28
+  },
+  {
+    "timestamp": 1779257396,
+    "time": "2026-05-20 15:09:56",
+    "action": "⏳ 드레스룸: ON 대기 중 (58% > 53%, 쿨다운 14분 남음)",
+    "type": "cooldown",
+    "device": "드레스룸",
+    "humidity": 58,
+    "temperature": 27
+  },
+  {
+    "timestamp": 1779257396,
+    "time": "2026-05-20 15:09:56",
+    "action": "⏳ 팬트리: ON 대기 중 (59% > 53%, 쿨다운 14분 남음)",
+    "type": "cooldown",
+    "device": "팬트리",
+    "humidity": 59,
+    "temperature": 27
   }
 ]
