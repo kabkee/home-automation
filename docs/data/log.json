@@ -718,5 +718,14 @@
     "device": "팬트리",
     "humidity": 60,
     "temperature": 27
+  },
+  {
+    "timestamp": 1779332557,
+    "time": "2026-05-21 12:02:37",
+    "action": "💧 드레스룸: Turned ON (60% > 53%)",
+    "type": "power_on",
+    "device": "드레스룸",
+    "humidity": 60,
+    "temperature": 26
   }
 ]
