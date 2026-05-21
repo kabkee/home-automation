@@ -1,13 +1,13 @@
 {
-  "last_updated": "2026-05-22 07:40:07",
-  "timestamp": 1779403207,
+  "last_updated": "2026-05-22 07:55:12",
+  "timestamp": 1779404112,
   "quiet_hours": true,
   "current_hour": 7,
   "devices": {
     "드레스룸": {
       "did": "741954293",
       "power": false,
-      "humidity": 63,
+      "humidity": 64,
       "temperature": 26,
       "mode": "Auto",
       "target_humidity": 50,
@@ -16,7 +16,7 @@
     "팬트리": {
       "did": "922790368",
       "power": false,
-      "humidity": 60,
+      "humidity": 61,
       "temperature": 26,
       "mode": "Auto",
       "target_humidity": 50,
