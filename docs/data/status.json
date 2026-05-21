@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-05-22 01:52:35",
-  "timestamp": 1779382355,
+  "last_updated": "2026-05-22 02:07:40",
+  "timestamp": 1779383260,
   "quiet_hours": true,
-  "current_hour": 1,
+  "current_hour": 2,
   "devices": {
     "드레스룸": {
       "did": "741954293",
