@@ -1780,5 +1780,14 @@
     "device": "드레스룸",
     "humidity": 58,
     "temperature": 27
+  },
+  {
+    "timestamp": 1779627092,
+    "time": "2026-05-24 21:51:32",
+    "action": "💧 드레스룸: Turned ON (57% > 53%)",
+    "type": "power_on",
+    "device": "드레스룸",
+    "humidity": 57,
+    "temperature": 27
   }
 ]
