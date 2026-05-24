@@ -1681,5 +1681,14 @@
     "device": "팬트리",
     "humidity": 47,
     "temperature": 28
+  },
+  {
+    "timestamp": 1779614394,
+    "time": "2026-05-24 18:19:54",
+    "action": "✅ 팬트리: Turned OFF (47% ≤ 47%)",
+    "type": "power_off",
+    "device": "팬트리",
+    "humidity": 47,
+    "temperature": 28
   }
 ]
