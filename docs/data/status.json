@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-05-25 06:39:53",
-  "timestamp": 1779658793,
+  "last_updated": "2026-05-25 06:54:59",
+  "timestamp": 1779659699,
   "quiet_hours": true,
   "current_hour": 6,
   "devices": {
@@ -8,7 +8,7 @@
       "did": "741954293",
       "power": false,
       "humidity": 56,
-      "temperature": 27,
+      "temperature": 26,
       "mode": "Auto",
       "target_humidity": 50,
       "fan_speed": 5
