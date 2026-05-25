@@ -1996,5 +1996,14 @@
     "device": "팬트리",
     "humidity": 47,
     "temperature": 29
+  },
+  {
+    "timestamp": 1779696842,
+    "time": "2026-05-25 17:14:02",
+    "action": "⏳ 팬트리: ON 대기 중 (58% > 53%, 쿨다운 14분 남음)",
+    "type": "cooldown",
+    "device": "팬트리",
+    "humidity": 58,
+    "temperature": 28
   }
 ]
