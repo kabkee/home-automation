@@ -1933,5 +1933,14 @@
     "device": "드레스룸",
     "humidity": 47,
     "temperature": 29
+  },
+  {
+    "timestamp": 1779685965,
+    "time": "2026-05-25 14:12:45",
+    "action": "⏳ 드레스룸: ON 대기 중 (58% > 53%, 쿨다운 14분 남음)",
+    "type": "cooldown",
+    "device": "드레스룸",
+    "humidity": 58,
+    "temperature": 27
   }
 ]
